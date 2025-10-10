@@ -18,7 +18,6 @@ on:
     types:
       - 'created'
 
-
 defaults:
   run:
     shell: 'bash'
@@ -94,18 +93,12 @@ jobs:
             const eventType = process.env.EVENT_TYPE
             core.setOutput('request', request);
 
-            if (request.startsWith("@gemini-cli /create_pr_from_issue")) {
-              core.setOutput('command', 'create_pr_from_issue');
-              const additionalContext = request.replace(/^@gemini-cli \/create_pr_from_issue/, '').trim();
-              core.setOutput('additional_context', additionalContext);
-            } else if (request.startsWith("@gemini-cli /review")) {
+            if (request.startsWith("@gemini-cli /review")) {
               core.setOutput('command', 'review');
               const additionalContext = request.replace(/^@gemini-cli \/review/, '').trim();
               core.setOutput('additional_context', additionalContext);
             } else if (request.startsWith("@gemini-cli /triage")) {
               core.setOutput('command', 'triage');
-              const additionalContext = request.replace(/^@gemini-cli \/triage/, '').trim();
-              core.setOutput('additional_context', additionalContext);
             } else if (request.startsWith("@gemini-cli")) {
               core.setOutput('command', 'invoke');
               const additionalContext = request.replace(/^@gemini-cli/, '').trim();
@@ -165,20 +158,6 @@ jobs:
     uses: './.github/workflows/gemini-invoke.yml'
     permissions:
       contents: 'read'
-      id-token: 'write'
-      issues: 'write'
-      pull-requests: 'write'
-    with:
-      additional_context: '${{ needs.dispatch.outputs.additional_context }}'
-    secrets: 'inherit'
-
-  create_pr_from_issue:
-    needs: 'dispatch'
-    if: |-
-      ${{ needs.dispatch.outputs.command == 'create_pr_from_issue' }}
-    uses: './.github/workflows/gemini-issue-to-pr.yml'
-    permissions:
-      contents: 'write'
       id-token: 'write'
       issues: 'write'
       pull-requests: 'write'
