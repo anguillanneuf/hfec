@@ -123,5 +123,11 @@ jobs:
             2. Use the available tools to find and read the relevant files in the repository.
             3. Based on your analysis, use the file editing tools to implement the necessary code changes.
             4. After you have implemented the changes, commit your changes to the current branch with a clear and descriptive commit message.
-            5. Finally, open a pull request from the current branch to the main branch.
           
+      - name: "Repository Dispatch"
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
+          repository: anguillanneuf/hfec
+          event-type: create-pull-request
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
