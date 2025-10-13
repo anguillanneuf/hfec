@@ -12,5 +12,7 @@
   "devDependencies": {
     "http-server": "^14.1.1"
   },
-  "keywords": ["spec-driven"]
+  "keywords": [
+    "spec-driven"
+  ]
 }
