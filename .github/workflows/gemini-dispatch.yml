@@ -73,9 +73,10 @@ jobs:
       - 'debugger'
     runs-on: 'ubuntu-latest'
     permissions:
-      contents: 'read'
+      contents: 'write'
       issues: 'write'
       pull-requests: 'write'
+      id-token: 'write'
     outputs:
       command: '${{ steps.extract_command.outputs.command }}'
       request: '${{ steps.extract_command.outputs.request }}'
