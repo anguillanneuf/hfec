@@ -40,6 +40,8 @@ jobs:
 
       - name: 'Checkout repository'
         uses: 'actions/checkout@v5'
+        with:
+          fetch-depth: 0
 
       - name: 'Run Gemini pull request review'
         uses: 'google-github-actions/run-gemini-cli@v0' # ratchet:exclude
