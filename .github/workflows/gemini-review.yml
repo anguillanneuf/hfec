@@ -89,7 +89,12 @@ jobs:
                     "get_pull_request_diff",
                     "get_pull_request_files",
                     "get_pull_request",
-                    "submit_pending_pull_request_review"
+                    "submit_pending_pull_request_review",
+                    "get_pull_request_comments",
+                    "list_pull_requests",
+                    "search_pull_requests",
+                    "get_commit",
+                    "list_commits"
                   ],
                   "env": {
                     "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
