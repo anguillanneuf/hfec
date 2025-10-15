@@ -11,8 +11,7 @@ on:
     types:
       - 'opened'
     branches:
-      - 'main'
-      - 'examples'
+      - 'experiments/**/*'
   issues:
     types:
       - 'opened'
@@ -22,7 +21,7 @@ on:
       - 'created'
   push:
     branches:
-      - 'examples'
+      - 'experiments/**/*'
 
 defaults:
   run:
@@ -80,7 +79,7 @@ jobs:
         id: 'mint_identity_token'
         if: |-
           ${{ vars.APP_ID }}
-        uses: 'actions/create-github-app-token@2'
+        uses: 'actions/create-github-app-token@v2'
         with:
           app-id: '${{ vars.APP_ID }}'
           private-key: '${{ secrets.APP_PRIVATE_KEY }}'
@@ -90,7 +89,7 @@ jobs:
 
       - name: 'Extract command'
         id: 'extract_command'
-        uses: 'actions/github-script@7'
+        uses: 'actions/github-script@v8'
         env:
           EVENT_TYPE: '${{ github.event_name }}.${{ github.event.action }}'
           REQUEST: '${{ github.event.comment.body || github.event.review.body || github.event.issue.body }}'
@@ -190,7 +189,7 @@ jobs:
         id: 'mint_identity_token'
         if: |-
           ${{ vars.APP_ID }}
-        uses: 'actions/create-github-app-token@2'
+        uses: 'actions/create-github-app-token@v2'
         with:
           app-id: '${{ vars.APP_ID }}'
           private-key: '${{ secrets.APP_PRIVATE_KEY }}'
