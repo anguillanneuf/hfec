@@ -1,16 +1,3 @@
-In realms of code, where specs reside,
-A blueprint's truth, a trusted guide.
-No scattered docs, a tangled mess,
-But one true source of happiness.
-
-With Tailwind's style and Chart.js's art,
-A static page that plays its part.
-From problem's depth to solution's height,
-A scrollable journey, shining bright.
-
-So raise a glass to specs so grand,
-The finest code in all the land!
-
 # The Code Spec Blueprint
 
 This repository contains a single-page, static website about a software development concept called "The Code Spec Blueprint."
@@ -21,7 +8,7 @@ The website explains the benefits of using a "Code Specification" as a single so
 
 ## Technology
 
-It's built with plain HTML, and styled with **Tailwind CSS**. It also uses **Chart.js** for an interactive bar chart.
+It's built with plain HTML.
 
 ## Features
 
