@@ -171,7 +171,7 @@ jobs:
           ISSUE_NUMBER: '${{ github.event.issue.number }}'
           AVAILABLE_LABELS: '${{ needs.triage.outputs.available_labels }}'
           SELECTED_LABELS: '${{ needs.triage.outputs.selected_labels }}'
-        uses: 'actions/github-scriptv8'
+        uses: 'actions/github-script@v8'
         with:
           # Use the provided token so that the "gemini-cli" is the actor in the
           # log for what changed the labels.
