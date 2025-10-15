@@ -12,7 +12,7 @@ on:
       - 'opened'
       - 'synchronize'
     branches:
-      - 'experiments/**/*'
+      - 'main'
   issues:
     types:
       - 'opened'
