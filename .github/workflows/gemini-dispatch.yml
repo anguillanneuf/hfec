@@ -12,7 +12,7 @@ on:
       - 'opened'
     branches:
       - 'main'
-      - 'examples/**/*'
+      - 'examples'
   issues:
     types:
       - 'opened'
@@ -22,7 +22,7 @@ on:
       - 'created'
   push:
     branches:
-      - 'examples/**/*'
+      - 'examples'
 
 defaults:
   run:
