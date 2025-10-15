@@ -10,6 +10,9 @@ on:
   pull_request:
     types:
       - 'opened'
+    branches:
+      - 'main'
+      - 'examples/**/*'
   issues:
     types:
       - 'opened'
@@ -17,6 +20,9 @@ on:
   issue_comment:
     types:
       - 'created'
+  push:
+    branches:
+      - 'examples/**/*'
 
 defaults:
   run:
