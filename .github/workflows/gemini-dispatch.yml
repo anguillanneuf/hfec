@@ -11,8 +11,7 @@ on:
     types:
       - 'opened'
     branches:
-      - 'main'
-      - 'examples'
+      - 'experiments/**/*'
   issues:
     types:
       - 'opened'
@@ -22,7 +21,7 @@ on:
       - 'created'
   push:
     branches:
-      - 'examples'
+      - 'experiments/**/*'
 
 defaults:
   run:
