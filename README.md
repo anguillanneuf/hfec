@@ -1,19 +1,3 @@
-*The spec, a map, so clear and bright,*
-
-*To guide the coder through the night.*
-
-*No tangled paths or features stray,*
-
-*Just building in a focused way.*
-
-*With every function, class, and line,*
-
-*The blueprint's vision starts to shine.*
-
-*So raise a glass to well-laid plans,*
-
-*And happy code in skillful hands.*
-
 
 # The Code Spec Blueprint
 
