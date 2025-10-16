@@ -48,23 +48,18 @@ jobs:
           DEBUG_event: '${{ toJSON(github.event) }}'
         run: |-
           env | grep '^DEBUG_'
-
+  mint_token:
+    uses: ./.github/workflows/mint-token.yml
+    secrets: inherit
   dispatch:
-    # For PRs: only if not from a fork
-    # For comments: only if user types @gemini-cli and is OWNER/MEMBER/COLLABORATOR
-    # For issues: only on open/reopen
-    if: |-
-      (
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.head.repo.fork == false
-      ) || (
-        github.event.sender.type == 'User' &&
-        startsWith(github.event.comment.body || github.event.review.body || github.event.issue.body, '@gemini-cli') &&
-        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association || github.event.review.author_association || github.event.issue.author_association)
-      ) || (
-        github.event_name == 'issues' &&
-        contains(fromJSON('["opened", "reopened"]'), github.event.action)
-      )
+    needs: mint_token
+    env:
+      IS_GEMINI_COMMAND: ${{ startsWith(github.event.comment.body || github.event.review.body || github.event.issue.body, '@gemini-cli') }}
+      IS_PRIVILEGED: ${{ contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association || github.event.review.author_association || github.event.issue.author_association) }}
+      IS_USER: ${{ github.event.sender.type == 'User' }}
+      IS_NON_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false }}
+      IS_ISSUE_OPEN_REOPEN: ${{ github.event_name == 'issues' && contains(fromJSON('["opened", "reopened"]'), github.event.action) }}
+    if: env.IS_NON_FORK_PR || (env.IS_USER && env.IS_GEMINI_COMMAND && env.IS_PRIVILEGED) || env.IS_ISSUE_OPEN_REOPEN
     runs-on: 'ubuntu-latest'
     permissions:
       id-token: 'write'
@@ -77,18 +72,6 @@ jobs:
       additional_context: '${{ steps.extract_command.outputs.additional_context }}'
       issue_number: '${{ github.event.pull_request.number || github.event.issue.number }}'
     steps:
-      - name: 'Mint identity token'
-        id: 'mint_identity_token'
-        if: |-
-          ${{ vars.APP_ID }}
-        uses: 'actions/create-github-app-token@v2'
-        with:
-          app-id: '${{ vars.APP_ID }}'
-          private-key: '${{ secrets.APP_PRIVATE_KEY }}'
-          permission-contents: 'read'
-          permission-issues: 'write'
-          permission-pull-requests: 'write'
-
       - name: 'Extract command'
         id: 'extract_command'
         uses: 'actions/github-script@v8'
@@ -121,7 +104,7 @@ jobs:
 
       - name: 'Acknowledge request'
         env:
-          GITHUB_TOKEN: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
+          GITHUB_TOKEN: '${{ needs.mint_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
           ISSUE_NUMBER: '${{ github.event.pull_request.number || github.event.issue.number }}'
           MESSAGE: |-
             🤖 Hi @${{ github.actor }}, I've received your request, and I'm working on it now! You can track my progress [in the logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
@@ -179,6 +162,7 @@ jobs:
       - 'review'
       - 'triage'
       - 'invoke'
+      - 'mint_token'
     if: |-
       ${{ always() && !cancelled() && (failure() || needs.dispatch.outputs.command == 'fallthrough') }}
     runs-on: 'ubuntu-latest'
@@ -187,21 +171,9 @@ jobs:
       issues: 'write'
       pull-requests: 'write'
     steps:
-      - name: 'Mint identity token'
-        id: 'mint_identity_token'
-        if: |-
-          ${{ vars.APP_ID }}
-        uses: 'actions/create-github-app-token@v2'
-        with:
-          app-id: '${{ vars.APP_ID }}'
-          private-key: '${{ secrets.APP_PRIVATE_KEY }}'
-          permission-contents: 'read'
-          permission-issues: 'write'
-          permission-pull-requests: 'write'
-
       - name: 'Send failure comment'
         env:
-          GITHUB_TOKEN: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
+          GITHUB_TOKEN: '${{ needs.mint_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
           ISSUE_NUMBER: '${{ github.event.pull_request.number || github.event.issue.number }}'
           MESSAGE: |-
             🤖 I'm sorry @${{ github.actor }}, but I was unable to process your request. Please [see the logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
