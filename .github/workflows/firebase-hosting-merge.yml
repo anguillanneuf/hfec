@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: read
+  actions: write
 jobs:
   build:
     uses: ./.github/workflows/build.yml
