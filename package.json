@@ -5,7 +5,7 @@
   "description": "A simple static website.",
   "scripts": {
     "start": "http-server",
-    "build": "mkdir -p public && cp index.html public"
+    "build": "mkdir -p public"
   },
   "author": "tianzi",
   "license": "ISC",
