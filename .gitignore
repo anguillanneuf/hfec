@@ -70,3 +70,6 @@ node_modules/
 
 .gemini/
 gha-creds-*.json
+
+.jules/
+jules-gemini-cli-extension/
