@@ -184,4 +184,174 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
       observer.observe(section);
     });
+
+    // --- Poll Functionality ---
+
+    const pollOptionsContainer = document.getElementById('poll-options');
+    const pollButtons = document.querySelectorAll('.poll-option');
+    const pollResultsContainer = document.getElementById('poll-results-container');
+
+    const pollOptionsMap = {
+        'onboarding': 'Developer Onboarding Time',
+        'clarity': 'Feature Clarity',
+        'misalignment': 'Cross-team Misalignment',
+        'ambiguity': 'Bugs from Ambiguity'
+    };
+
+    // --- Mock Implementation (No Firebase) ---
+    // This section uses localStorage to demonstrate the poll's functionality
+    // without needing a live Firebase backend.
+
+    function getMockPollResults() {
+        const results = localStorage.getItem('pollResults');
+        return results ? JSON.parse(results) : {};
+    }
+
+    function saveMockPollResults(results) {
+        localStorage.setItem('pollResults', JSON.stringify(results));
+    }
+
+    function recordVote(option) {
+        localStorage.setItem('votedInPoll', 'true');
+        pollButtons.forEach(btn => btn.disabled = true);
+
+        const results = getMockPollResults();
+        results[option] = (results[option] || 0) + 1;
+        saveMockPollResults(results);
+
+        console.log("Mock vote recorded!");
+        showPollResults();
+    }
+
+    function showPollResults() {
+        pollOptionsContainer.style.display = 'none';
+        pollResultsContainer.classList.remove('hidden');
+
+        const results = getMockPollResults();
+        const totalVotes = Object.values(results).reduce((sum, count) => sum + count, 0);
+
+        if (totalVotes === 0) {
+            pollResultsContainer.innerHTML = '<p>No votes have been cast yet.</p>';
+            return;
+        }
+
+        let resultsHTML = '';
+        for (const key in pollOptionsMap) {
+            const count = results[key] || 0;
+            const percentage = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+            resultsHTML += `
+                <div class="poll-result">
+                    <div class="flex justify-between items-center mb-1">
+                       <span class="poll-result-label">${pollOptionsMap[key]}</span>
+                       <span class="poll-result-percentage">${percentage}%</span>
+                    </div>
+                    <div class="poll-result-bar">
+                        <div class="poll-result-fill" style="width: ${percentage}%;">${count} votes</div>
+                    </div>
+                </div>
+            `;
+        }
+        pollResultsContainer.innerHTML = resultsHTML;
+    }
+
+    const hasVoted = localStorage.getItem('votedInPoll') === 'true';
+
+    if (hasVoted) {
+        showPollResults();
+    }
+
+    pollButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (localStorage.getItem('votedInPoll') === 'true') return;
+            const option = button.dataset.option;
+            recordVote(option);
+        });
+
+        if (hasVoted) {
+            button.disabled = true;
+        }
+    });
+
+
+    /*
+    // --- Firebase Implementation ---
+    // To use Firebase, uncomment this section and replace the mock implementation above.
+    // Make sure to also add your Firebase config.
+
+    // 1. Add your Firebase config object here:
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // 2. Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const pollResultsRef = db.collection('poll-results').doc('votes');
+
+    // 3. Uncomment the two functions below (recordVote and showPollResults)
+
+    // function recordVote(option) {
+    //     localStorage.setItem('votedInPoll', 'true');
+    //     pollButtons.forEach(btn => btn.disabled = true);
+    //
+    //     db.runTransaction((transaction) => {
+    //         return transaction.get(pollResultsRef).then((doc) => {
+    //             if (!doc.exists) {
+    //                 transaction.set(pollResultsRef, { [option]: 1 });
+    //             } else {
+    //                 const newCount = (doc.data()[option] || 0) + 1;
+    //                 transaction.update(pollResultsRef, { [option]: newCount });
+    //             }
+    //         });
+    //     }).then(() => {
+    //         console.log("Vote recorded!");
+    //         showPollResults();
+    //     }).catch((error) => {
+    //         console.error("Transaction failed: ", error);
+    //     });
+    // }
+
+    // function showPollResults() {
+    //     pollOptionsContainer.style.display = 'none';
+    //     pollResultsContainer.classList.remove('hidden');
+    //
+    //     pollResultsRef.get().then((doc) => {
+    //         if (!doc.exists) {
+    //             pollResultsContainer.innerHTML = '<p>No votes have been cast yet.</p>';
+    //             return;
+    //         }
+    //
+    //         const results = doc.data();
+    //         const totalVotes = Object.values(results).reduce((sum, count) => sum + count, 0);
+    //
+    //         let resultsHTML = '';
+    //         for (const key in pollOptionsMap) {
+    //             const count = results[key] || 0;
+    //             const percentage = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+    //             resultsHTML += `
+    //                 <div class="poll-result">
+    //                     <div class="flex justify-between items-center mb-1">
+    //                        <span class="poll-result-label">${pollOptionsMap[key]}</span>
+    //                        <span class="poll-result-percentage">${percentage}%</span>
+    //                     </div>
+    //                     <div class="poll-result-bar">
+    //                         <div class="poll-result-fill" style="width: ${percentage}%;">${count} votes</div>
+    //                     </div>
+    //                 </div>
+    //             `;
+    //         }
+    //         pollResultsContainer.innerHTML = resultsHTML;
+    //     }).catch((error) => {
+    //         console.error("Error getting poll results: ", error);
+    //         pollResultsContainer.innerHTML = '<p>Could not load poll results.</p>';
+    //     });
+    // }
+    */
 });
