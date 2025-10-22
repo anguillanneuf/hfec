@@ -53,13 +53,14 @@ jobs:
     secrets: inherit
   dispatch:
     needs: mint_token
-    env:
-      IS_GEMINI_COMMAND: ${{ startsWith(github.event.comment.body || github.event.review.body || github.event.issue.body, '@gemini-cli') }}
-      IS_PRIVILEGED: ${{ contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association || github.event.review.author_association || github.event.issue.author_association) }}
-      IS_USER: ${{ github.event.sender.type == 'User' }}
-      IS_NON_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false }}
-      IS_ISSUE_OPEN_REOPEN: ${{ github.event_name == 'issues' && contains(fromJSON('["opened", "reopened"]'), github.event.action) }}
-    if: env.IS_NON_FORK_PR || (env.IS_USER && env.IS_GEMINI_COMMAND && env.IS_PRIVILEGED) || env.IS_ISSUE_OPEN_REOPEN
+    if: |-
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) ||
+      (
+        github.event.sender.type == 'User' &&
+        startsWith(github.event.comment.body || github.event.review.body || github.event.issue.body, '@gemini-cli') &&
+        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association || github.event.review.author_association || github.event.issue.author_association)
+      ) ||
+      (github.event_name == 'issues' && contains(fromJSON('["opened", "reopened"]'), github.event.action)) 
     runs-on: 'ubuntu-latest'
     permissions:
       id-token: 'write'
