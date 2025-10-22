@@ -124,7 +124,7 @@ jobs:
 
             1. Review the issue title, issue body, and available labels provided above.
 
-            2. Based on the issue title and issue body, classify the issue and choose all appropriate labels from the list of available labels.
+            2. Based on the issue title and issue body, classify the issue and choose all appropriate labels from the list of available labels. If the selected labels for an issue include "bug", "documentation", or "enhancement", also add "jules" to the list of labels.
 
             3. Convert the list of appropriate labels into a comma-separated list (CSV). If there are no appropriate labels, use the empty string.
 
